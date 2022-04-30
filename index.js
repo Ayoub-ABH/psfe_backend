@@ -2,6 +2,7 @@ const express = require('express');
 const env = require('dotenv');
 const mongoose = require('mongoose');
 const app = express();
+const userRoutes = require('./src/routes/userRoutes');
 
 
 //connection db
@@ -18,10 +19,9 @@ env.config();
 app.use(express.json());
 
 
+//Main routes
+app.use("/api/user", userRoutes);
 
-app.get('/user',(req,res)=>{
-    res.send("hello bro")
-})
 
 
 
