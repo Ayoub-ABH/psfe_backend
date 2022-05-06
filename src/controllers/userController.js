@@ -78,20 +78,28 @@ const getUsers = async (req, res) => {
 //access Admin
 //still not completed
 const updateUserprofile = async (req, res) => {
-  const user = await User.findById(req.user._id);
+  User.findByIdAndUpdate(req.params.id,{$set: req.body},(error) => {
+    if (error) {
+        res.send({message:"User not found"})
+    }else{
+        res.send({message:"User updated "})
+    }
+})
 };
 
 //delete a user
 //access Admin
 const deleteUser = async (req, res) => {
-  const user = await User.findById(req.params.id);
+   User.findByIdAndRemove(req.params.id, (error)=>{
 
-  if (user) {
-    await user.remove();
-    res.send({ message: "User remove" });
-  } else {
-    res.send({ message: "User not found" });
-  }
+      if(error){
+        res.send({ message: "User remove" });
+      }
+      else {
+        res.send({ message: "User not found" });
+      }
+    } 
+   )
 };
 
 module.exports = {
