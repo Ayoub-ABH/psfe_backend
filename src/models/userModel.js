@@ -23,6 +23,13 @@ const userSchema = mongoose.Schema(
     },
     profilePicture:{
         type: String
+    },
+    billingAddress: {
+      phone: { type: String },
+      address: { type: String },
+      city: { type: String },
+      postalCode: { type: String},
+      country: { type: String},
     }
   },
   {

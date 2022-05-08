@@ -9,13 +9,13 @@ const register = async (req, res) => {
   const userExist = await User.findOne({ email });
 
   if (userExist) {
-    res.send({ message: "User already exists" });
+    return res.send({ message: "User already exists" });
   }
   if (!validator.isEmail(email)) {
-    res.send({ message: "Please provide valid email" });
+    return res.send({ message: "Please provide valid email" });
   }
   if (!validator.isStrongPassword(password)) {
-    res.send({
+    return res.send({
       message:
         "At least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]",
     });
@@ -44,7 +44,7 @@ const login = async (req, res) => {
   if (user) {
     if (await user.comparePassword(password)) {
       const token = jwt.sign(
-        { id: User._id, name: user.name, role: user.role },
+        { id: user._id, name: user.name, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
@@ -59,6 +59,8 @@ const login = async (req, res) => {
 
 //get a user
 const getUserProfile = async (req, res) => {
+
+  console.log(req.user)
   const user = await User.findById(req.params.id);
   if (user) {
     res.send({ user: user });
