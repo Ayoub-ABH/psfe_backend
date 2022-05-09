@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
+const Review = require('./reviewModel')
 const mongoosePaginate = require('mongoose-paginate-v2');
+
+
+
 
 const productSchema = mongoose.Schema(
     {
@@ -40,8 +44,12 @@ const productSchema = mongoose.Schema(
             require: true,
         },
 
-    //images: [{ titre: { type: String } }],
-    //review:[reviewSchema],
+        //images: [{ titre: { type: String } }],
+        reviews:[{
+            type: mongoose.ObjectId,
+            required: true,
+            ref: Review
+          }],
 
         rating:{
             type:Number,
@@ -59,6 +67,7 @@ const productSchema = mongoose.Schema(
 );
 
 productSchema.plugin(mongoosePaginate);
+
 
 
 module.exports = mongoose.model("Product",productSchema);

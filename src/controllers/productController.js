@@ -68,6 +68,8 @@ const oneProduct = async (req, res) => {
 };
 
 
+
+
 //ajouter un produit
 //access Admin
 const addProduct = async (req, res) => {

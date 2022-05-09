@@ -1,5 +1,4 @@
 const Order = require('../models/orderModel')
-const Product = require('../models/productModel')
 const User = require('../models/userModel')
 
 
@@ -65,7 +64,30 @@ const saveOrder = async (req, res) => {
 
 }
 
+// page profile
+// all orders of a user
+// access user
+const getMyOrders = async (req, res) => {
+    const orders = await Order.find({ user: req.user.id });
+    if(orders){
+        res.send(orders);
+    }else{
+        res.send({message:"no orders found"})
+    }
+  };
 
 
+//page admin
+// all orders of all users
+//access Admin
+const getAllOrders = async (req, res) => {
+    const orders = await Order.find({});
+    if(orders){
+        res.send(orders);
+    }else{
+        res.send({message:"no orders found"})
+    }
+  };
 
-module.exports = { saveOrder }
+
+module.exports = { saveOrder,getMyOrders,getAllOrders}

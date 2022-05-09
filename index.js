@@ -5,6 +5,7 @@ const app = express();
 const userRoutes = require('./src/routes/userRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
+const reviewRoutes = require('./src/routes/reviewRoutes');
 
 
 
@@ -33,6 +34,11 @@ app.use("/api/product",productRoutes)
 
 //order routes
 app.use("/api/order",orderRoutes)
+
+//review routes
+app.use("/api/review",reviewRoutes)
+
+
 
 
 
