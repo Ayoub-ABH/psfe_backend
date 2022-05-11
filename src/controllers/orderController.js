@@ -1,12 +1,14 @@
 const Order = require('../models/orderModel')
 const User = require('../models/userModel')
+const asyncHandler = require("express-async-handler");
+
 
 
 
 //checkout page
 //passer une commande 
 //access simple user
-const saveOrder = async (req, res) => {
+const saveOrder =asyncHandler( async (req, res) => {
     const {
         orderItems,
         shippingAddress,
@@ -19,7 +21,8 @@ const saveOrder = async (req, res) => {
     let order = {};
 
     if (orderItems && orderItems.lenght == 0) {
-        return res.send({ message: "no order items found" })
+        res.status(400)
+        throw new Error("no order items found")
      } 
     // else {
     //     orderItems.forEach(async (orderItem) => {
@@ -55,39 +58,42 @@ const saveOrder = async (req, res) => {
 
     order.save((error) => {
         if (error) {
-            res.send({ message: "order not saved" });
+            res.status(404)
+            throw new Error("order not saved");
         } else {
-            res.send({ message: "order saved" });
+            res.status(200).json({ message: "order saved" });
         }
     });
 
 
-}
+})
 
 // page profile
 // all orders of a user
 // access user
-const getMyOrders = async (req, res) => {
+const getMyOrders =asyncHandler( async (req, res) => {
     const orders = await Order.find({ user: req.user.id });
     if(orders){
-        res.send(orders);
+        res.status(200).json(orders);
     }else{
-        res.send({message:"no orders found"})
+        res.status(400)
+        throw new Error("no orders found")
     }
-  };
+  });
 
 
 //page admin
 // all orders of all users
 //access Admin
-const getAllOrders = async (req, res) => {
+const getAllOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({});
     if(orders){
-        res.send(orders);
+        res.status(200).json(orders);
     }else{
-        res.send({message:"no orders found"})
+        res.status(400)
+        throw new Error("no orders found")
     }
-  };
+  });
 
 
 module.exports = { saveOrder,getMyOrders,getAllOrders}

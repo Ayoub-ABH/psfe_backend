@@ -1,31 +1,45 @@
+const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 
 //home page
 //new products
 //access simple users
-const newProducts = async (req, res) => {
+const newProducts = asyncHandler (async (req, res) => {
     const newProducts = await Product.find({})
         .select('name image category price old_price rating')
         .sort({ createdAt: -1 })
         .limit(5);
-    res.send(newProducts);
-};
+
+    if (newProducts) {
+        res.json(newProducts);
+    } else {
+        res.status(404)
+        throw new Error("No products found")
+    }
+    
+});
 
 //home page
 //top selling
 //access simple users
-const topProducts = async (req, res) => {
-    const newProducts = await Product.find({})
+const topProducts = asyncHandler (async (req, res) => {
+    const topProducts = await Product.find({})
         .select('name image category price old_price rating')
         .sort({ rating: -1 })
         .limit(6);
-    res.send(newProducts);
-};
+
+    if (topProducts) {
+        res.json(topProducts);
+    } else {
+        res.status(404)
+        throw new Error("No products found")
+    }
+});
 
 //shop page
 //all products with paginate and filters
 //access simple user
-const allProducts = async (req, res) => {
+const allProducts = asyncHandler (async (req, res) => {
     const { page, limit, category, min_price, max_price, brand, name, sortBy } = req.query;
     const options = {
         select: 'name image category price old_price rating createdAt',
@@ -55,8 +69,14 @@ const allProducts = async (req, res) => {
 
 
     const newProducts = await Product.paginate(query, options);
-    res.send(newProducts);
-};
+    if (newProducts) {
+        res.json(newProducts);
+    } else {
+        res.status(404)
+        throw new Error("No products found")
+    }
+    
+});
 
 
 //product page
@@ -64,7 +84,13 @@ const allProducts = async (req, res) => {
 //access simple user
 const oneProduct = async (req, res) => {
     const oneProduct = await Product.findById(req.params.id);
-    res.send(oneProduct);
+
+    if (oneProduct) {
+        res.json(oneProduct);
+    } else {
+        res.status(404)
+        throw new Error("No product found")
+    }
 };
 
 
@@ -76,9 +102,10 @@ const addProduct = async (req, res) => {
     const product = new Product(req.body);
     product.save((error) => {
         if (error) {
-            res.send({ message: "user not registered" });
+            res.status(400)
+            throw new Error( "product not added");
         } else {
-            res.send({ message: "product registred" });
+            res.status(200).json({ message: "product added" });
         }
     });
 };
@@ -88,9 +115,10 @@ const addProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     Product.findByIdAndRemove(req.params.id, (error) => {
         if (error) {
-            res.send({ message: "User not found" });
+            res.status(400)
+            throw new Error( "product not removed");
         } else {
-            res.send({ message: "User deleted" });
+            res.status(200).json({ message: "product removed" });
         }
     });
 };
@@ -101,9 +129,10 @@ const updateProduct = async (req,res)=>{
 
     Product.findByIdAndUpdate(req.params.id,{$set: req.body},(error) => {
         if (error) {
-            res.send({message:"product not found"})
-        }else{
-            res.send({message:"product updated "})
+            res.status(400)
+            throw new Error( "product not updated");
+        } else {
+            res.status(200).json({ message: "product updated" });
         }
     })
 }

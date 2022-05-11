@@ -6,6 +6,7 @@ const userRoutes = require('./src/routes/userRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const reviewRoutes = require('./src/routes/reviewRoutes');
+const { errorHandler } = require('./src/middlewares/errorMiddleware');
 
 
 
@@ -21,6 +22,8 @@ env.config();
 
 //middlewares
 app.use(express.json());
+
+
 
 
 //---Main routes----//
@@ -39,8 +42,8 @@ app.use("/api/order",orderRoutes)
 app.use("/api/review",reviewRoutes)
 
 
-
-
+//midlware of errors
+app.use(errorHandler)
 
 
 

@@ -1,24 +1,28 @@
 const User = require("../models/userModel");
 const validator = require("validator");
+const asyncHandler = require('express-async-handler')
+
 const jwt = require("jsonwebtoken");
 
 //register
-const register = async (req, res) => {
+const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
   const userExist = await User.findOne({ email });
 
   if (userExist) {
-    return res.send({ message: "User already exists" });
+    res.status(400);
+    throw new Error("User already exists");
   }
   if (!validator.isEmail(email)) {
-    return res.send({ message: "Please provide valid email" });
+    res.status(400);
+    throw new Error("Please provide valid email");
   }
   if (!validator.isStrongPassword(password)) {
-    return res.send({
-      message:
-        "At least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]",
-    });
+    res.status(400);
+    throw new Error(
+      "At least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]"
+    );
   }
 
   const user = new User({
@@ -29,15 +33,16 @@ const register = async (req, res) => {
 
   user.save((error) => {
     if (error) {
-      res.send({ message: "user not registered" });
+      res.status(400)
+      throw new Error("user not registered");
     } else {
-      res.send({ message: "user registred" });
+      res.status(200).json({ message: "user registred" });
     }
   });
-};
+});
 
 //login
-const login = async (req, res) => {
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
@@ -48,14 +53,16 @@ const login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
-      res.send({ token: token, user: user });
+      res.status(200).json({ token: token, user: user });
     } else {
-      res.send({ message: "invalid password" });
+      res.status(400)
+      throw new Error("invalid password");
     }
   } else {
-    res.send({ message: "invalid email" });
+    res.status(400)
+    throw new Error("invalid email");
   }
-};
+});
 
 //get a user
 const getUserProfile = async (req, res) => {
@@ -63,46 +70,49 @@ const getUserProfile = async (req, res) => {
   console.log(req.user)
   const user = await User.findById(req.params.id);
   if (user) {
-    res.send({ user: user });
+    res.status(200).json({ user: user });
   } else {
-    res.send({ message: "User not found" });
+    res.status(404);
+    throw new Error("User not found");
   }
 };
 
 //get all users
 //access Admin
-const getUsers = async (req, res) => {
+const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
-  res.send({ users: users });
-};
+  res.json(users);
+});
 
 //update a user
 //access Admin
 //still not completed
-const updateUserprofile = async (req, res) => {
+const updateUserprofile =asyncHandler( async (req, res) => {
   User.findByIdAndUpdate(req.params.id,{$set: req.body},(error) => {
     if (error) {
-        res.send({message:"User not found"})
+        res.status(404)
+        throw new Error("User not found")
     }else{
-        res.send({message:"User updated "})
+        res.json({message:"User updated "})
     }
 })
-};
+});
 
 //delete a user
 //access Admin
-const deleteUser = async (req, res) => {
+const deleteUser = asyncHandler(async (req, res) => {
    User.findByIdAndRemove(req.params.id, (error)=>{
 
       if(error){
-        res.send({ message: "User remove" });
+        res.status(404)
+        throw new Error ("User not found");
       }
       else {
-        res.send({ message: "User not found" });
+        res.json({ message: "User removed" });
       }
     } 
    )
-};
+});
 
 module.exports = {
   register,

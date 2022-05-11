@@ -1,5 +1,7 @@
 const Product = require('../models/productModel')
 const Review = require('../models/reviewModel')
+const asyncHandler = require("express-async-handler");
+
 
 
 
@@ -8,7 +10,7 @@ const Review = require('../models/reviewModel')
 // product page
 // Creer une review
 // access  Private
-const createProductReview = async (req, res) => {
+const createProductReview =asyncHandler( async (req, res) => {
     const { idProduct,rating, comment } = req.body;
   
     const product = await Product.findById(idProduct);
@@ -21,7 +23,8 @@ const createProductReview = async (req, res) => {
       );
 
       if (alreadyReviewed) {
-        return res.send({message:"you already reviewed this product"});
+        res.status(400)
+        throw new Error("you already reviewed this product");
       }
   
       const review = new Review({
@@ -46,12 +49,12 @@ const createProductReview = async (req, res) => {
     } else {
       res.send({message:"Product not found"});
     }
-};
+});
 
 // product page
 // Creer une review
 // access  Private
-const deleteProductReview = async (req, res) => {
+const deleteProductReview =asyncHandler( async (req, res) => {
 
   const {idProduct,idReview} = req.query;
   const product = await Product.findById(idProduct);
@@ -61,10 +64,11 @@ const deleteProductReview = async (req, res) => {
     Review.findByIdAndRemove(idReview, (error)=>{
 
         if(error){
-          res.send({ message: "review remove" });
+          res.status(404)
+          throw new Error( "review  not found");
         }
         else {
-          res.send({ message: "review not found" });
+          res.status(200).json({ message: "review not found" });
         }
       } 
       )
@@ -77,7 +81,7 @@ const deleteProductReview = async (req, res) => {
   
 
 
-};
+});
 
 // product page
 // Creer une review
