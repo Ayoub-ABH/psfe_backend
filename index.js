@@ -1,6 +1,7 @@
 const express = require('express');
 const env = require('dotenv');
 const mongoose = require('mongoose');
+const cors = require('cors')
 const app = express();
 const userRoutes = require('./src/routes/userRoutes');
 const productRoutes = require('./src/routes/productRoutes');
@@ -22,6 +23,7 @@ env.config();
 
 //middlewares
 app.use(express.json());
+app.use(cors())
 
 
 

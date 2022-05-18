@@ -8,6 +8,11 @@ const jwt = require("jsonwebtoken");
 const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
+  if(!name || !email || !password){
+    res.status(400);
+    throw new Error("please fill all fields");
+  }
+
   const userExist = await User.findOne({ email });
 
   if (userExist) {
@@ -21,7 +26,7 @@ const register = asyncHandler(async (req, res) => {
   if (!validator.isStrongPassword(password)) {
     res.status(400);
     throw new Error(
-      "At least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]"
+      "the password shoud be at least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]"
     );
   }
 
@@ -44,6 +49,12 @@ const register = asyncHandler(async (req, res) => {
 //login
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  if(!email || !password){
+    res.status(400);
+    throw new Error("please fill all fields");
+  }
+  
   const user = await User.findOne({ email });
 
   if (user) {

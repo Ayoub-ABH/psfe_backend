@@ -42,7 +42,7 @@ const topProducts = asyncHandler (async (req, res) => {
 const allProducts = asyncHandler (async (req, res) => {
     const { page, limit, category, min_price, max_price, brand, name, sortBy } = req.query;
     const options = {
-        select: 'name image category price old_price rating createdAt',
+        select: 'name image category brand price old_price rating createdAt',
         page: parseInt(page) || 1,
         limit: parseInt(limit) || 9,
     };
