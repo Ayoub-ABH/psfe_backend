@@ -45,12 +45,7 @@ const productSchema = mongoose.Schema(
         },
 
         //images: [{ titre: { type: String } }],
-        reviews:[{
-            type: mongoose.ObjectId,
-            required: true,
-            ref: Review
-          }],
-
+        
         rating:{
             type:Number,
             default:0

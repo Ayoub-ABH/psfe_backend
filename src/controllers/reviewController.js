@@ -10,45 +10,49 @@ const asyncHandler = require("express-async-handler");
 // product page
 // Creer une review
 // access  Private
-const createProductReview =asyncHandler( async (req, res) => {
+const createProductReview =asyncHandler( async (req, res) => {   
     const { idProduct,rating, comment } = req.body;
+    if( !rating || !comment){
+      res.status(400);
+      throw new Error("please fill all fields");
+    }
   
-    const product = await Product.findById(idProduct);
-    const userReview = await Review.find({user:req.user.id});
+    const userReview = await Review.find({user:req.user.id,product:idProduct});
 
-    
-    if (product) {     
-      const alreadyReviewed = await product.reviews.find(
-        (r) => r.toString() === userReview[0]._id.toString()
-      );
 
-      if (alreadyReviewed) {
+    if (userReview[0]) {     
         res.status(400)
         throw new Error("you already reviewed this product");
-      }
-  
+    }else{
       const review = new Review({
         name: req.user.name,
         rating: rating,
         comment: comment,
         user: req.user.id,
+        product:idProduct
       });
+      review.save((error) => {
+        if (error) {
+            res.status(400)
+            throw new Error( "review not added");
+        } else {
 
-      await review.save();
+          //product.numReviews = product.reviews.length;
   
-      product.reviews.push(review);
-  
-      //product.numReviews = product.reviews.length;
-  
-      // product.rating =
-      //   product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-      //   product.reviews.length;
-  
-      await product.save();
-      res.send({ message: "Review added" });
-    } else {
-      res.send({message:"Product not found"});
+          // product.rating =
+          //   product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+          //   product.reviews.length;
+
+            res.status(200).json({ message: "review added" });
+        }
+    });
+
     }
+  
+     
+        
+      
+
 });
 
 // product page
@@ -83,6 +87,28 @@ const deleteProductReview =asyncHandler( async (req, res) => {
 
 });
 
+
+// product page
+// Creer une review
+// access  Private
+const getAllReviews =asyncHandler( async (req, res) => {
+  const {idProduct,page,limit} = req.query;
+
+  const options = {
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 3,
+  };
+  const reviews = await Review.paginate({product:idProduct},options)
+
+  if (reviews.docs.length !== 0) {
+    res.status(200).json(reviews);
+  } else {
+      res.status(404)
+      throw new Error("No reviews found")
+  }
+  
+});
+
 // product page
 // Creer une review
 // access  Private
@@ -92,6 +118,8 @@ const updateProductReview = async (req, res) => {
 
 
 
+
 module.exports = {
-    createProductReview
+    createProductReview,
+    getAllReviews
 }

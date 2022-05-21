@@ -1,12 +1,14 @@
+const { query } = require("express");
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
+const Review = require("../models/reviewModel");
 
 //home page
 //new products
 //access simple users
 const newProducts = asyncHandler (async (req, res) => {
     const newProducts = await Product.find({})
-        .select('name image category price old_price rating')
+        .select('name image quantity category price old_price rating')
         .sort({ createdAt: -1 })
         .limit(5);
 
@@ -24,7 +26,7 @@ const newProducts = asyncHandler (async (req, res) => {
 //access simple users
 const topProducts = asyncHandler (async (req, res) => {
     const topProducts = await Product.find({})
-        .select('name image category price old_price rating')
+        .select('name image quantity category price old_price rating')
         .sort({ rating: -1 })
         .limit(6);
 
@@ -42,7 +44,7 @@ const topProducts = asyncHandler (async (req, res) => {
 const allProducts = asyncHandler (async (req, res) => {
     const { page, limit, category, min_price, max_price, brand, name, sortBy } = req.query;
     const options = {
-        select: 'name image category brand price old_price rating createdAt',
+        select: 'name image category quantity brand price old_price rating createdAt',
         page: parseInt(page) || 1,
         limit: parseInt(limit) || 9,
     };
