@@ -23,8 +23,7 @@ const orderSchema = mongoose.Schema(
       }
     ],
     shippingAddress: {
-      fullname: { type: String },
-      phone: { type: String, require: true },
+      telephone: { type: String, require: true },
       address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
@@ -32,7 +31,6 @@ const orderSchema = mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      required: true,
     },
 
     // paymentResult: {
@@ -42,11 +40,11 @@ const orderSchema = mongoose.Schema(
     //   email_address: { type: String },
     // },
 
-    shippingPrice: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
+    // shippingPrice: {
+    //   type: Number,
+    //   required: true,
+    //   default: 0.0,
+    // },
     totalPrice: {
       type: Number,
       required: true,

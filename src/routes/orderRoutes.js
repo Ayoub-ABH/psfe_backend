@@ -1,5 +1,5 @@
 const express = require("express");
-const {saveOrder,getMyOrders, getAllOrders} = require("../controllers/orderController")
+const {saveOrder,getMyOrders, getAllOrders,checkoutSession} = require("../controllers/orderController")
 const router = express.Router();
 const { loginRequire } = require("../middlewares/authMiddleware");
 
@@ -8,6 +8,9 @@ const { loginRequire } = require("../middlewares/authMiddleware");
 
 //checkout page
 router.route("/checkout").post(loginRequire,saveOrder);
+
+//checkout page stripe
+router.route("/create-checkout-session").post(loginRequire,checkoutSession);
 
 //profile page
 router.route("/my").get(loginRequire,getMyOrders);
