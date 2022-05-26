@@ -18,7 +18,7 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 
   const userReview = await Review.find({ user: req.user.id, product: idProduct });
-
+  const AllProductReviews = await Review.find({ product: idProduct });
 
   if (userReview[0]) {
     res.status(400)
@@ -37,11 +37,24 @@ const createProductReview = asyncHandler(async (req, res) => {
         throw new Error("review not added");
       } else {
 
-        //product.numReviews = product.reviews.length;
+        const newNumReviews = AllProductReviews.length+1 ;
+        
 
-        // product.rating =
-        //   product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-        //   product.reviews.length;
+        let newRating = AllProductReviews.reduce((acc, item) => parseInt(item.rating)  + parseInt(acc), parseInt(rating)) /newNumReviews;
+
+        if(newRating > (Math.abs(parseInt(newRating))+0.5) )
+        newRating=Math.abs(parseInt(newRating))+1
+        else 
+        newRating = Math.abs(parseInt(newRating));
+
+
+
+        Product.findByIdAndUpdate(idProduct,{$set: {numReviews:newNumReviews,rating:newRating}},(error) => {
+          if (error) {
+              res.status(400);
+              throw new Error( error);
+          } 
+        })
 
         res.status(200).json({ message: "review added" });
       }
@@ -60,13 +73,39 @@ const createProductReview = asyncHandler(async (req, res) => {
 // access  Private
 const deleteProductReview = asyncHandler(async (req, res) => {
 
-  const { _id } = req.query;
-  Review.findByIdAndRemove(_id, (error) => {
+  const { idReview,idProduct } = req.query;
+  const AllProductReviews = await Review.find({ product: idProduct });
+  const review = await Review.find({ _id:idReview });
+
+
+  Review.findByIdAndRemove(idReview, (error) => {
     if (error) {
       res.status(404)
       throw new Error("review  not found");
     }
     else {
+      const newNumReviews = AllProductReviews.length-1;
+
+      let newRating=0;
+
+      if(newNumReviews!==0){
+         newRating = AllProductReviews.reduce((acc, item) => parseInt(item.rating)  + parseInt(acc), -parseInt(review[0].rating))/newNumReviews;
+
+        if(newRating > (Math.abs(parseInt(newRating))+0.5) )
+          newRating=Math.abs(parseInt(newRating))+1
+        else 
+          newRating = Math.abs(parseInt(newRating));
+      }
+
+      
+
+      Product.findByIdAndUpdate(idProduct,{$set: {numReviews:newNumReviews,rating:newRating}},(error) => {
+        if (error) {
+            res.status(400);
+            throw new Error( error);
+        } 
+      })
+
       res.status(200).json({ message: "review deleted" });
     }
   }

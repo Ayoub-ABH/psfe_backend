@@ -10,7 +10,7 @@ const newProducts = asyncHandler (async (req, res) => {
     const newProducts = await Product.find({})
         .select('name image quantity category price old_price rating')
         .sort({ createdAt: -1 })
-        .limit(5);
+        .limit(4);
 
     if (newProducts) {
         res.json(newProducts);
