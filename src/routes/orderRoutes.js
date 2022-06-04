@@ -1,5 +1,5 @@
 const express = require("express");
-const {saveOrder,getMyOrders, getAllOrders,checkoutSession} = require("../controllers/orderController")
+const {saveOrder,getMyOrders, getAllOrders,checkoutSession, deleteOrder, updateOrderStatus} = require("../controllers/orderController")
 const router = express.Router();
 const { loginRequire } = require("../middlewares/authMiddleware");
 
@@ -18,6 +18,8 @@ router.route("/my").get(loginRequire,getMyOrders);
 
 //admin
 router.route("/all").get(getAllOrders);
+router.route("/delete/:id").delete(deleteOrder)
+router.route("/update/:id").post(updateOrderStatus)
 
 
 

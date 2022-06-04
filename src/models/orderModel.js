@@ -31,8 +31,17 @@ const orderSchema = mongoose.Schema(
     },
     paymentMethod: {
       type: String,
+      default:'card'
     },
-
+    status:{
+      type: String,
+      enum:['pending','validated','delivered','canceled'],
+      default:'pending'
+    },
+    name:{
+      type: String,
+      require:true
+    },
     // paymentResult: {
     //   id: { type: String },
     //   status: { type: String },

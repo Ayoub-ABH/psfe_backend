@@ -142,6 +142,7 @@ const saveOrder = asyncHandler(async (req, res) => {
 
     const order = new Order({
     user: req.user.id,
+    name:req.user.name,
     orderItems: newOrderItems,
     shippingAddress,
     paymentMethod,
@@ -174,6 +175,18 @@ const getMyOrders = asyncHandler(async (req, res) => {
   }
 });
 
+//suprrimer un produit
+//access Admin
+const deleteOrder = async (req, res) => {
+  Order.findByIdAndRemove(req.params.id, (error) => {
+      if (error) {
+          res.status(400)
+          throw new Error( "order not removed");
+      } else {
+          res.status(200).json( "order removed");
+      }
+  });
+};
 
 //page admin
 // all orders of all users
@@ -189,4 +202,18 @@ const getAllOrders = asyncHandler(async (req, res) => {
 });
 
 
-module.exports = { saveOrder, getMyOrders, getAllOrders, checkoutSession }
+const updateOrderStatus = async (req,res)=>{
+
+    
+    Order.findByIdAndUpdate(req.params.id,{$set: {status:req.body.status}},(error) => {
+        if (error) {
+            res.status(400)
+            throw new Error( "product not updated");
+        } else {
+            res.status(200).json( "product updated");
+        }
+    })
+}
+
+
+module.exports = { saveOrder,deleteOrder,updateOrderStatus, getMyOrders, getAllOrders, checkoutSession }

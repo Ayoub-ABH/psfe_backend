@@ -1,5 +1,5 @@
 const express = require("express");
-const {createProductReview, getAllReviews, deleteProductReview} = require("../controllers/reviewController")
+const {createProductReview, getAllReviews, deleteProductReview, getAllReviewsAdmin} = require("../controllers/reviewController")
 const router = express.Router();
 const { loginRequire } = require("../middlewares/authMiddleware");
 
@@ -14,6 +14,7 @@ const { loginRequire } = require("../middlewares/authMiddleware");
 router.route("/add").post(loginRequire,createProductReview);
 router.route("/delete").delete(deleteProductReview);
 router.route("/all").get(getAllReviews);
+router.route("/allReviews").get(getAllReviewsAdmin);
 
 
 

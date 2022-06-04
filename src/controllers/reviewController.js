@@ -19,6 +19,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 
   const userReview = await Review.find({ user: req.user.id, product: idProduct });
   const AllProductReviews = await Review.find({ product: idProduct });
+  const product = await Product.find({ _id: idProduct })
 
   if (userReview[0]) {
     res.status(400)
@@ -29,7 +30,8 @@ const createProductReview = asyncHandler(async (req, res) => {
       rating: rating,
       comment: comment,
       user: req.user.id,
-      product: idProduct
+      product: idProduct,
+      productName:product[0].name
     });
     review.save((error) => {
       if (error) {
@@ -136,12 +138,19 @@ const getAllReviews = asyncHandler(async (req, res) => {
 
 });
 
-// product page
-// Creer une review
-// access  Private
-const updateProductReview = async (req, res) => {
+const getAllReviewsAdmin = asyncHandler(async (req, res) => {
 
-};
+  const reviews = await Review.find({})
+
+  if (reviews) {
+    res.status(200).json(reviews);
+  } else {
+    res.status(404)
+    throw new Error("No reviews found")
+  }
+
+});
+
 
 
 
@@ -149,5 +158,6 @@ const updateProductReview = async (req, res) => {
 module.exports = {
   createProductReview,
   getAllReviews,
-  deleteProductReview
+  deleteProductReview,
+  getAllReviewsAdmin
 }

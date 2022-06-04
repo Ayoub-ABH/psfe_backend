@@ -1,5 +1,6 @@
 const express = require("express");
-const {addProduct,deleteProduct, newProducts,topProducts,allProducts,oneProduct,updateProduct} = require("../controllers/productController")
+const {addProduct,deleteProduct, newProducts,topProducts,allProducts,oneProduct,updateProduct,allProductsAdmin} = require("../controllers/productController");
+const { upload } = require("../middlewares/uploadMiddleware");
 const router = express.Router();
 
 
@@ -16,7 +17,8 @@ router.route("/shop/allPrs").get(allProducts);
 router.route("/:id").get(oneProduct);
 
 //pour L'admin
-router.route("/add").post(addProduct);
+router.route("/all/allPrds").get(allProductsAdmin);
+router.route("/add/add").post(upload.single("image"),addProduct);
 router.route("/delete/:id").delete(deleteProduct);
 router.route("/update/:id").put(updateProduct);
 

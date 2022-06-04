@@ -26,6 +26,9 @@ const reviewSchema = mongoose.Schema(
         type: mongoose.ObjectId,
         require: true,
         ref: "Product" ,
+      },
+      productName:{
+        type: String,
       }
     },
     {
