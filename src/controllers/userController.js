@@ -1,8 +1,8 @@
 const User = require("../models/userModel");
 const validator = require("validator");
 const asyncHandler = require('express-async-handler')
-
 const jwt = require("jsonwebtoken");
+
 
 //register
 const register = asyncHandler(async (req, res) => {
@@ -92,7 +92,58 @@ const getUserProfile = async (req, res) => {
 //access Admin
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
-  res.json(users);
+  if (users) {
+    res.status(200).json(users);
+  } else {
+      res.status(404)
+      throw new Error("No users found")
+  }
+});
+
+
+
+const addUser = asyncHandler(async (req, res) => {
+    const {name,role,email,password} = req.body;
+
+    if(!name || !email || !password || !role || !req.file){
+      res.status(400);
+      throw new Error("please fill all fields");
+    }
+  
+    const userExist = await User.findOne({ email });
+  
+    if (userExist) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
+    if (!validator.isEmail(email)) {
+      res.status(400);
+      throw new Error("Please provide valid email");
+    }
+    if (!validator.isStrongPassword(password)) {
+      res.status(400);
+      throw new Error(
+        "the password shoud be at least 8 characters—the more characters, the better. \nA mixture of both uppercase and lowercase letters. A mixture of letters and numbers. Inclusion of at least one special character, e.g., ! @ # ? ]"
+      );
+    }
+
+    const user = new User({
+      name: name,
+      password: password,
+      role:role,
+      email: email,
+      profilePicture:req.file.filename
+    });
+
+    user.save((error) => {
+      if (error) {
+        res.status(400)
+        throw new Error("user not added");
+      } else {
+        res.status(200).json("user added");
+      }
+    });
+
 });
 
 //update a user
@@ -113,13 +164,12 @@ const updateUserprofile =asyncHandler( async (req, res) => {
 //access Admin
 const deleteUser = asyncHandler(async (req, res) => {
    User.findByIdAndRemove(req.params.id, (error)=>{
-
       if(error){
         res.status(404)
         throw new Error ("User not found");
       }
       else {
-        res.json({ message: "User removed" });
+        res.json("User removed");
       }
     } 
    )
@@ -130,6 +180,7 @@ module.exports = {
   login,
   getUserProfile,
   getUsers,
+  addUser,
   updateUserprofile,
   deleteUser,
 };
