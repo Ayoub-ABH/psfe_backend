@@ -31,7 +31,7 @@ const orderSchema = mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      default:'card'
+      default:"card"
     },
     status:{
       type: String,

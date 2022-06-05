@@ -7,6 +7,8 @@ const userRoutes = require('./src/routes/userRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const reviewRoutes = require('./src/routes/reviewRoutes');
+const contactRoutes = require('./src/routes/contactRoutes')
+const settingsRoutes = require('./src/routes/settingsRoutes')
 const { errorHandler } = require('./src/middlewares/errorMiddleware');
 
 
@@ -43,6 +45,11 @@ app.use("/api/order",orderRoutes)
 //review routes
 app.use("/api/review",reviewRoutes)
 
+//contact routes
+app.use("/api/contact",contactRoutes)
+
+//contact routes
+app.use("/api/settings",settingsRoutes)
 
 //midlware of errors
 app.use(errorHandler)
