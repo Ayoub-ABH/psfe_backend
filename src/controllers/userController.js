@@ -2,6 +2,8 @@ const User = require("../models/userModel");
 const validator = require("validator");
 const asyncHandler = require('express-async-handler')
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt")
+
 
 
 //register
@@ -150,14 +152,48 @@ const addUser = asyncHandler(async (req, res) => {
 //access Admin
 //still not completed
 const updateUserprofile =asyncHandler( async (req, res) => {
-  User.findByIdAndUpdate(req.params.id,{$set: req.body},(error) => {
+  const {name,email,password} = req.body;
+
+  if(!name || !email || !password || !req.file){
+    res.status(400);
+    throw new Error("please fill all fields");
+  }
+  const userExist = await User.findOne({ email });
+  if (userExist) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(password, salt)
+
+  const user = {
+    name:name,
+    email:email,
+    role:"user",
+    password:hashPassword,
+    profilePicture:req.file.filename
+  }
+
+ 
+
+  
+
+  User.findByIdAndUpdate(req.params.id,{$set: user},async (error) => {
     if (error) {
         res.status(404)
-        throw new Error("User not found")
+        throw new Error("user not updated")
     }else{
-        res.json({message:"User updated "})
+      const token = jwt.sign(
+        { id: req.params.id, name: user.name, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+      const updatedUser = await User.findById(req.params.id)
+
+      res.status(200).json({ token: token, user: updatedUser });
     }
-})
+   })
 });
 
 //delete a user
