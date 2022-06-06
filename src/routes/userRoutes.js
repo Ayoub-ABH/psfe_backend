@@ -7,6 +7,7 @@ const {
   addUser,
   updateUserprofile,
   deleteUser,
+  updateUserFromAdmin,
 } = require("../controllers/userController");
 const { loginRequire } = require("../middlewares/authMiddleware");
 const {upload} = require("../middlewares/uploadMiddleware")
@@ -23,6 +24,7 @@ router.route("/profile/:id").get(loginRequire, getUserProfile);
 router.route("/all").get(getUsers);
 router.route("/add").post(upload.single('image'),addUser)
 router.route("/update/:id").put(upload.single('image'),updateUserprofile);
+router.route("/updateFromAdmin/:id").put(upload.single('image'),updateUserFromAdmin);
 router.route("/delete/:id").delete(deleteUser);
 
 module.exports = router;

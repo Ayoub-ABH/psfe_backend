@@ -147,7 +147,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
 //suprrimer un produit
 //access Admin
-const deleteProduct = async (req, res) => {
+const deleteProduct = asyncHandler(async (req, res) => {
     Product.findByIdAndRemove(req.params.id, (error) => {
         if (error) {
             res.status(400)
@@ -156,21 +156,41 @@ const deleteProduct = async (req, res) => {
             res.status(200).json( "product removed");
         }
     });
-};
+});
 
 //modifier un produit
 //access admin
-const updateProduct = async (req,res)=>{
+const updateProduct = asyncHandler(async (req,res)=>{
+    const {brand,category,description,details,name,old_price,price,quantity} = req.body;
+    
+    if(!brand || !category || !description || !details || !name || !old_price || !price || !quantity || !req.file){
+        res.status(400);
+        throw new Error("please fill all fields");
+    }
 
-    Product.findByIdAndUpdate(req.params.id,{$set: req.body},(error) => {
+
+    const product = {
+        brand,
+        category,
+        description,
+        details,
+        name,
+        old_price,
+        price,
+        quantity,
+        image:req.file.filename,
+      };
+
+
+    Product.findByIdAndUpdate(req.params.id,{$set: product},(error) => {
         if (error) {
             res.status(400)
             throw new Error( "product not updated");
         } else {
-            res.status(200).json({ message: "product updated" });
+            res.status(200).json("product updated");
         }
     })
-}
+})
 
 module.exports = {
     addProduct,

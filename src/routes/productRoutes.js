@@ -20,7 +20,7 @@ router.route("/:id").get(oneProduct);
 router.route("/all/allPrds").get(allProductsAdmin);
 router.route("/add/add").post(upload.single("image"),addProduct);
 router.route("/delete/:id").delete(deleteProduct);
-router.route("/update/:id").put(updateProduct);
+router.route("/update/:id").put(upload.single("image"),updateProduct);
 
 
 

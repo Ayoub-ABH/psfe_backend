@@ -175,9 +175,6 @@ const updateUserprofile =asyncHandler( async (req, res) => {
     profilePicture:req.file.filename
   }
 
- 
-
-  
 
   User.findByIdAndUpdate(req.params.id,{$set: user},async (error) => {
     if (error) {
@@ -192,6 +189,44 @@ const updateUserprofile =asyncHandler( async (req, res) => {
       const updatedUser = await User.findById(req.params.id)
 
       res.status(200).json({ token: token, user: updatedUser });
+    }
+   })
+});
+
+//update a user
+//access Admin
+//still not completed
+const updateUserFromAdmin =asyncHandler( async (req, res) => {
+  const {name,email,password,role} = req.body;
+ console.log(req.body)
+  if(!name || !email || !password || !role || !req.file){
+    res.status(400);
+    throw new Error("please fill all fields");
+  }
+  const userExist = await User.findOne({ email });
+  if (userExist) {
+    res.status(400);
+    throw new Error("User already exists");
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  const hashPassword = await bcrypt.hash(password, salt)
+
+  const user = {
+    name:name,
+    email:email,
+    role:role,
+    password:hashPassword,
+    profilePicture:req.file.filename
+  }
+
+
+  User.findByIdAndUpdate(req.params.id,{$set: user},async (error) => {
+    if (error) {
+        res.status(404)
+        throw new Error("user not updated")
+    }else{
+      res.status(200).json("user updated")
     }
    })
 });
@@ -219,4 +254,5 @@ module.exports = {
   addUser,
   updateUserprofile,
   deleteUser,
+  updateUserFromAdmin
 };
