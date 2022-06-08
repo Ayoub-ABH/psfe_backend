@@ -198,16 +198,11 @@ const updateUserprofile =asyncHandler( async (req, res) => {
 //still not completed
 const updateUserFromAdmin =asyncHandler( async (req, res) => {
   const {name,email,password,role} = req.body;
- console.log(req.body)
   if(!name || !email || !password || !role || !req.file){
     res.status(400);
     throw new Error("please fill all fields");
   }
-  const userExist = await User.findOne({ email });
-  if (userExist) {
-    res.status(400);
-    throw new Error("User already exists");
-  }
+  
 
   const salt = await bcrypt.genSalt(10)
   const hashPassword = await bcrypt.hash(password, salt)
